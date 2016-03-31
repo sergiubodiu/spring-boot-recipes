@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: user-preferences
+  profiles:
+    active: production
+  data:
+    rest:
+      base-path: /api
+
+---
+
+spring:
+    profiles: production
+    datasource:
+      jdbc-url: jdbc:oracle:thin:@127.0.0.1:1521:orcl
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+      username: hr
+      password: oracle
+
+
