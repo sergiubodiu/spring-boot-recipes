@@ -7,15 +7,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Date;
 
+@Configuration
 @SpringBootApplication
 public class UserPreferencesApplication {
 
@@ -54,6 +57,12 @@ public class UserPreferencesApplication {
             }
         };
     }
+
+//    @Bean
+//    public DataSource dataSource() {
+//
+//    }
+
 }
 
 @RestController
