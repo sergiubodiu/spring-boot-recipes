@@ -1,0 +1,28 @@
+https://dimitrisli.wordpress.com/2012/08/08/how-to-install-oracle-database-on-mac-os-any-version/
+
+== Step 1: Getting VirtualBox
+This is as simple as any other installation on a Mac. All we have to do is grab our x86 version (assuming an Intel CPU) for Mac from the official link:_https://www.virtualbox.org/wiki/Downloads[download page]
+
+== Step 2: Getting the VM file
+This is the link:_http://www.oracle.com/technetwork/database/enterprise-edition/databaseappdev-vm-161299.html[download page] and the download instructions are clear. The ova VM file is big ~7G
+
+== Step 3: Installing the Guest VM
+From the VirtualBox Menu we select File > Import Appliance
+Then we make it point to the VM file we’ve just downloaded
+
+== Step 4: Starting the VM
+Starting up the VM is as easy as inserting oracle/oracle when we are prompted for username/password:
+
+== Step 5: Testing external connectivity – via Telnet
+From the Host OS (Mac OS X Mavericks) we can test that we can connect to localhost at port 1521:
+
+[source,bash]
+    $ telnet 127.0.0.1 1521
+
+[source,bash]
+    Trying 127.0.0.1...
+    Connected to localhost.
+    Escape character is '^]'
+
+== Step 6: Testing external connectivity – via IDE
+Also by using IntelliJ  datasource capabilities we can successfully connect to the Oracle’s Sample HR database (username: hr, password: oracle):
