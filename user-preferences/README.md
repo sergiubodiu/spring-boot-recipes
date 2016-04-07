@@ -31,11 +31,31 @@ In the above example the ojdbc6.jar version 12.1.0.2 is used.  Replace the -Dart
 
 replace driver name and version with the one you downloaded
 
-4) In spring boot add/modify the application.properties file to use your db url, username and password.  Example:
+4) In spring boot add/modify the application.properties file to use your db url, username and password e.g.:
 
-spring.datasource.driverClassName=oracle.jdbc.driver.OracleDriver
-spring.datasource.url=jdbc:oracle:thin:@127.0.0.1:1521:orcl
+    spring.datasource.driverClassName=oracle.jdbc.driver.OracleDriver
+    spring.datasource.url=jdbc:oracle:thin:@127.0.0.1:1521:orcl
 
+Credentials for Oracle Day Workstation
 
-spring.datasource.username=hr
-spring.datasource.password=orcl
+    spring.datasource.username=hr
+    spring.datasource.password=orcl
+
+Generate traffic script
+   
+    #!/bin/bash
+    # generate traffic
+    for i in `seq 1 100`; do
+      echo "sequence $i"
+      if test $RANDOM -gt 15000
+      then
+          x=$(($RANDOM/3600))
+          echo $x
+          for j in `seq 1 $x`; do
+            echo $j
+            curl {ChangeME.cfapps.io} &> /dev/null
+          done
+          sleep 1
+      fi  
+    done
+    
