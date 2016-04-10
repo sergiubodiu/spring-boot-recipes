@@ -3,20 +3,19 @@ package io.pivotal.apac;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Configuration
 @SpringBootApplication
@@ -28,65 +27,74 @@ public class UserPreferencesApplication {
 
     String[] values = new String[] {"Sergiu","Flavio","Jeff","Arif","Karthik"};
 
-    @Bean
-    CommandLineRunner runner(final UserPreferenceRepository repository) {
-        return new CommandLineRunner() {
-            @Override
-            public void run(String... args) throws Exception {
-                for (String value : values) {
-                    UserPreference preference = new UserPreference();
-                    preference.userId = value;
-
-                    preference.categoryKey = "application";
-                    preference.categoryValue = "View";
-
-                    preference.categoryKey2 = "page";
-                    preference.categoryValue2 = "Transaction";
-
-                    preference.subCategoryKey = "tab";
-                    preference.subCategoryValue = "Social";
-
-
-                    preference.preferenceKey = "transactionTypeFilter";
-                    preference.preferenceValue = "All";
-                    repository.save(preference);
-                }
-                for (UserPreference preference : repository.findAll()) {
-                    System.out.println(preference);
-                }
-            }
-        };
-    }
-
 //    @Bean
-//    public DataSource dataSource() {
+//    CommandLineRunner runner(final UserPreferenceRepository repository) {
+//        return new CommandLineRunner() {
+//            @Override
+//            public void run(String... args) throws Exception {
+//                for (String value : values) {
+//                    UserPreference preference = new UserPreference();
+//                    preference.userId = value;
 //
+//                    preference.categoryKey = "application";
+//                    preference.categoryValue = "View";
+//
+//                    preference.categoryKey2 = "page";
+//                    preference.categoryValue2 = "Transaction";
+//
+//                    preference.subCategoryKey = "tab";
+//                    preference.subCategoryValue = "Social";
+//
+//
+//                    preference.preferenceKey = "transactionTypeFilter";
+//                    preference.preferenceValue = "All";
+//                    repository.save(preference);
+//                }
+//                for (UserPreference preference : repository.findAll()) {
+//                    System.out.println(preference);
+//                }
+//            }
+//        };
 //    }
 
 }
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/api/v1")
 class UserPreferencesController {
 
     @Autowired
     private UserPreferenceRepository userPreferenceRepository;
 
     @RequestMapping(method = RequestMethod.POST, value = "/userPreferences.json")
-    HttpStatus post(@RequestBody UserPreference input) {
+    ResponseEntity<String> saveUserPreference(@RequestBody UserPreference input) {
         //this.validateUser(userId);
         userPreferenceRepository.save(input);
-        return HttpStatus.ACCEPTED;
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/userPreferences.json")
-    UserPreferenceView get(@RequestParam("USERID") String userId) {
+    UserPreferenceView getUserPreference(
+            @RequestParam("USERID") String userId) {
 
         Collection<UserPreference> preferences = userPreferenceRepository.findByUserId(userId);
         UserPreferenceView view = new UserPreferenceView();
         view.userId = userId;
         view.preferences = preferences;
         return view;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/users")
+    List<UserPreference> getAllUserPreferences(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        return userPreferenceRepository.findAll(new PageRequest(page, size)).getContent();
+    }
+
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/users/{userId}")
+    void deleteUser(@PathVariable Long userId) {
+        userPreferenceRepository.delete(userId);
     }
 
 }
@@ -147,6 +155,7 @@ class UserPreference {
 
     boolean isEncrypted;
 
+    @JsonIgnore
     public Long getId() {
         return Id;
     }
@@ -215,10 +224,12 @@ class UserPreference {
         return lastModificationUserId;
     }
 
+    @JsonIgnore
     public boolean isEnabled() {
         return isEnabled;
     }
 
+    @JsonIgnore
     public boolean isEncrypted() {
         return isEncrypted;
     }
@@ -250,8 +261,3 @@ class UserPreference {
 
 }
 
-interface UserPreferenceRepository extends JpaRepository<UserPreference, Long> {
-
-    Collection<UserPreference> findByUserId(String userId);
-
-}
