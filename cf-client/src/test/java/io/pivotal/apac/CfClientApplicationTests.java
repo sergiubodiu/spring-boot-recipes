@@ -21,6 +21,7 @@ public class CfClientApplicationTests {
 				.host(clientProperties.getHost())
 				.username(clientProperties.getUsername())
 				.password(clientProperties.getPassword())
+                .skipSslValidation(clientProperties.isSkipSslValidation())
 				.build();
 
 		new CloudFoundryOperationsBuilder()
@@ -30,6 +31,8 @@ public class CfClientApplicationTests {
 				.applications()
 				.list()
 				.consume(System.out::println);
+
+
 	}
 
 }
