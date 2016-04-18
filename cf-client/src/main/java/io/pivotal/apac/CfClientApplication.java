@@ -3,19 +3,12 @@ package io.pivotal.apac;
 import org.cloudfoundry.client.CloudFoundryClient;
 import org.cloudfoundry.operations.CloudFoundryOperations;
 import org.cloudfoundry.operations.CloudFoundryOperationsBuilder;
-import org.cloudfoundry.operations.applications.ApplicationSummary;
-import org.cloudfoundry.operations.applications.Applications;
-import org.cloudfoundry.operations.applications.GetApplicationRequest;
-import org.cloudfoundry.operations.applications.StopApplicationRequest;
-import org.cloudfoundry.operations.organizations.OrganizationSummary;
 import org.cloudfoundry.spring.client.SpringCloudFoundryClient;
+import org.cloudfoundry.spring.logging.SpringLoggingClient;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import java.util.function.Predicate;
 
 @SpringBootApplication
 public class CfClientApplication {
@@ -39,7 +32,7 @@ public class CfClientApplication {
 	}
 
     @Bean
-    CloudFoundryOperations cloudFoundryOperations(CloudFoundryClient cloudFoundryClient,
+    CloudFoundryOperations operations(CloudFoundryClient cloudFoundryClient,
                                                   @Value("${cf.organization}") String organization,
                                                   @Value("${cf.space}") String space) {
         return new CloudFoundryOperationsBuilder()
@@ -49,34 +42,10 @@ public class CfClientApplication {
     }
 
     @Bean
-    CommandLineRunner runner(final CloudFoundryOperations cloudFoundryOperations) {
-        return args -> {
-            cloudFoundryOperations.organizations()
-                    .list()
-                    .map(OrganizationSummary::getName)
-                    .consume(System.out::println);
-
-            Predicate<ApplicationSummary> predicate =
-                    summary -> !summary.getName().equalsIgnoreCase("spring-music");
-
-            final Applications applications = cloudFoundryOperations.applications();
-
-            applications.list()
-                    .filter(predicate)
-                    .consume(summary -> {
-                        System.out.println(summary.getName());
-                            applications.get(GetApplicationRequest.builder()
-                                    .name(summary.getName())
-                                    .build())
-                                    .consume(System.out::println);
-
-                            applications.stop(StopApplicationRequest.builder()
-                                    .name(summary.getName())
-                                    .build())
-                                    .consume(System.out::println);
-
-                    });
-        };
+    SpringLoggingClient loggingClient(SpringCloudFoundryClient cloudFoundryClient) {
+        return SpringLoggingClient.builder()
+                .cloudFoundryClient(cloudFoundryClient)
+                .build();
     }
 
 }
