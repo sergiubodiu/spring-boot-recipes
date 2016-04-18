@@ -88,23 +88,43 @@ public class CfClientApplicationTests {
 				.list()
 				.consume(System.out::println);
 
+        application.get(Duration.ofSeconds(30));
+
         Predicate<ApplicationSummary> predicate =
                 summary -> summary.getName().equalsIgnoreCase(name);
 
         final Applications applications = operations.applications();
 
+        applications.setEnvironmentVariable(
+                SetEnvironmentVariableApplicationRequest.builder()
+                .name(name)
+                .variableName("JAVA_OPTS")
+                .variableValue("-Djava.security.egd=file:///dev/urandom")
+                .build())
+                .doOnSuccess(x -> System.out.println("Environment Variables: " + x))
+                .get(Duration.ofSeconds(10));
+
+        applications.get(GetApplicationRequest.builder()
+                .name(name)
+                .build())
+                .doOnSuccess(x -> System.out.println("Application Details: " + x.getName()))
+                .consume(System.out::println);
+
+        Mono<Void> applicationStart = applications.start(StartApplicationRequest.builder()
+                .name(name)
+                .startupTimeout(Duration.ofSeconds(180))
+                .build())
+                .doOnSuccess(x -> System.out.println("Starting Application: " + name));
+
+        applicationStart.consume(x -> System.out.println("Started"));
+
         applications.list()
                 .filter(predicate)
                 .consume(summary -> {
                     System.out.println(summary.getName());
-                    applications.get(GetApplicationRequest.builder()
-                            .name(summary.getName())
-                            .build())
-                            .consume(System.out::println);
-
                 });
 
-        application.get(Duration.ofSeconds(120));
+        applicationStart.get(Duration.ofSeconds(180));
 	}
 
     private static Mono<Void> createApplication(CloudFoundryOperations cloudFoundryOperations,
@@ -114,9 +134,11 @@ public class CfClientApplicationTests {
                         .application(applicationBits)
                         .healthCheckType(ApplicationHealthCheck.PORT)
                         .buildpack("java_buildpack")
-                        .diskQuota(512)
+                        .startupTimeout(Duration.ofSeconds(180))
+                        .diskQuota(256)
                         .path("app.zip")
                         .memory(512)
+                        .noStart(true)
                         .name(name)
                         .build())
                 .doOnSuccess(s -> System.out.println("Pushing: " + name));

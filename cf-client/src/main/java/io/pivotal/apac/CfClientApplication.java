@@ -1,6 +1,5 @@
 package io.pivotal.apac;
 
-import org.cloudfoundry.client.CloudFoundryClient;
 import org.cloudfoundry.operations.CloudFoundryOperations;
 import org.cloudfoundry.operations.CloudFoundryOperationsBuilder;
 import org.cloudfoundry.spring.client.SpringCloudFoundryClient;
@@ -19,7 +18,7 @@ public class CfClientApplication {
 	}
 
 	@Bean
-    CloudFoundryClient cloudFoundryClient(@Value("${cf.host}") String host,
+    SpringCloudFoundryClient cloudFoundryClient(@Value("${cf.host}") String host,
                                           @Value("${cf.username}") String username,
                                           @Value("${cf.password}") String password,
                                           @Value("${cf.skipSslValidation:false}") Boolean skipSslValidation) {
@@ -32,7 +31,7 @@ public class CfClientApplication {
 	}
 
     @Bean
-    CloudFoundryOperations operations(CloudFoundryClient cloudFoundryClient,
+    CloudFoundryOperations operations(SpringCloudFoundryClient cloudFoundryClient,
                                                   @Value("${cf.organization}") String organization,
                                                   @Value("${cf.space}") String space) {
         return new CloudFoundryOperationsBuilder()
