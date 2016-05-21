@@ -1,5 +1,6 @@
 package io.pivotal.apac;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +12,8 @@ import org.springframework.web.client.RestTemplate;
 public class ClientApplication {
 
 	final static String KEYSTORE_PASSWORD = "s3cr3t";
-    String value = "https://server.local.micropcf.io/env";
+    @Value("${hello.server:https://server.local.pcfdev.io/hello}")
+    String value;
 
 	static
 	{
@@ -25,10 +27,7 @@ public class ClientApplication {
 
 					public boolean verify(String hostname,
 										  javax.net.ssl.SSLSession sslSession) {
-						if (hostname.equals("localhost")) {
-							return true;
-						}
-						return false;
+						return true;
 					}
 				});
 	}
