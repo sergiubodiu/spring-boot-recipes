@@ -1,0 +1,23 @@
+server:
+  port: 0
+
+http:
+  client:
+    ssl:
+      key-store: classpath:client.jks
+      key-store-password: s3cr3t
+      key-password: s3cr3t
+      key-store-type: JKS
+      trust-store: classpath:server.p12
+      trust-store-type: PKCS12
+      trust-store-password: s3cr3t
+
+hello:
+  server: https://127.0.0.1:8080/
+
+---
+
+spring:
+    profiles: cloud
+hello:
+  server: https://server.local.pcfdev.io/
