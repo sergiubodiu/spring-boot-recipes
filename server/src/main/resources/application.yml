@@ -1,8 +1,10 @@
 server:
   ssl:
-    "key-store" : 'classpath:server.jks'
-    "key-store-password" : s3cr3t
-    "key-password" : s3cr3t
-    "trust-store" : 'classpath:server.jks'
-    "trust-store-password" : s3cr3t
-    "client-auth" : "need"
+    key-store: 'classpath:server.jks'
+    key-store-password: s3cr3t
+    key-store-type: JKS
+    key-password: s3cr3t
+    trust-store: 'classpath:client.p12'
+    trust-store-password: s3cr3t
+    trust-store-type: PKCS12
+    client-auth: "need"

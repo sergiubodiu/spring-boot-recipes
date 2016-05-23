@@ -1,106 +1,111 @@
 package io.pivotal.apac;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.*;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.security.cert.CertificateException;
 
 @SpringBootApplication
 public class ClientApplication {
 
-	static
-	{
+    @Value("${http.client.maxPoolSize:10}")
+    private Integer maxPoolSize;
+
+    static
+    {
         System.setProperty("javax.net.debug","ssl,handshake,record");
-
-
-		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
-				new javax.net.ssl.HostnameVerifier() {
-
-					public boolean verify(String hostname,
-										  javax.net.ssl.SSLSession sslSession) {
-						return true;
-					}
-				});
-	}
+    }
 
     // e.g. Add http.client.ssl.trust-store=classpath:ssl/truststore.jks to application.properties
-    @Value("${http.client.ssl.trust-store:classpath:client.jks}")
+    @Value("${http.client.ssl.key-store}")
+    private Resource keyStore;
+
+    @Value("${http.client.ssl.key-store-password}")
+    private char[] keyStorePassword;
+
+    // e.g. Add http.client.ssl.trust-type=PKCS12 to application.properties
+    @Value("${http.client.ssl.key-store-type}")
+    private String keyStoreType;
+
+    // e.g. Add http.client.ssl.trust-store=classpath:ssl/truststore.jks to application.properties
+    @Value("${http.client.ssl.trust-store}")
     private Resource trustStore;
 
-    @Value("${http.client.ssl.trust-store-password:s3cr3t}")
+    @Value("${http.client.ssl.trust-store-password}")
     private char[] trustStorePassword;
 
     // e.g. Add http.client.ssl.trust-type=PKCS12 to application.properties
-    @Value("${http.client.ssl.trust-store-type:JKS}")
+    @Value("${http.client.ssl.trust-store-type}")
     private String trustStoreType;
 
     // e.g. Add http.client.ssl.version=SSLv3 to application.properties
     @Value("${http.client.ssl.version:TLS}")
     private String sslVersion;
 
-    @Value("${hello.server:https://localhost:8080/}")
+    @Value("${hello.server}")
     private String value;
 
-    @Value("${http.client.maxPoolSize:10}")
-    private Integer maxPoolSize;
-
-    @Bean
-    public HttpClient httpClient() {
-        SSLConnectionSocketFactory socketFactory = null;
+    public void getHttpsURLConnection() throws IOException {
+        HttpsURLConnection.setDefaultHostnameVerifier(
+                new HostnameVerifier() {
+                    public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
+                        return true;
+                    }
+                });
         try {
-            socketFactory = new SSLConnectionSocketFactory(
-                    new SSLContextBuilder()
-                            .loadTrustMaterial(trustStore.getURL(), trustStorePassword, new TrustSelfSignedStrategy()).build());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslSocketFactory());
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
             e.printStackTrace();
         } catch (KeyStoreException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
         } catch (CertificateException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
             e.printStackTrace();
         }
 
-        return HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+        ResponseEntity<String> response = new RestTemplate().getForEntity(value, String.class);
+        System.out.println(response.getBody());
     }
 
-    @Bean
-    public RestTemplate restTemplate(HttpClient httpClient) {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
-        return restTemplate;
+    private SSLSocketFactory sslSocketFactory() throws NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException, CertificateException, KeyManagementException {
+        KeyStore ks = KeyStore.getInstance(keyStoreType);
+        ks.load(keyStore.getInputStream(), keyStorePassword);
+
+        String keyAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(keyAlgorithm);
+        kmf.init(ks, keyStorePassword);
+
+        KeyStore ts = KeyStore.getInstance(trustStoreType);
+        ts.load(trustStore.getInputStream(), trustStorePassword);
+
+        String trustAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(trustAlgorithm);
+        tmf.init(ts);
+
+        SSLContext sslcontext = SSLContext.getInstance(sslVersion);
+        sslcontext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        return sslcontext.getSocketFactory();
     }
 
-    @Bean
-    CommandLineRunner runner(final RestTemplate template) {
-        return new CommandLineRunner() {
-            @Override
-            public void run(String... args) throws Exception {
-                ResponseEntity<String> response = template.getForEntity(value, String.class);
-                System.out.println(response.getBody());
-            }
-        };
+
+    public static void main(String[] args) throws IOException {
+        ConfigurableApplicationContext context = SpringApplication.run(ClientApplication.class, args);
+
+        ClientApplication app = context.getBean(ClientApplication.class);
+        app.getHttpsURLConnection();
     }
 
-	public static void main(String[] args) {
-		SpringApplication.run(ClientApplication.class, args);
-	}
 }

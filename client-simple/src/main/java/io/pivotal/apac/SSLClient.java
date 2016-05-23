@@ -16,7 +16,7 @@ import java.security.*;
 import java.security.cert.CertificateException;
 
 @SpringBootApplication
-public class ClientSimpleApplication {
+public class SSLClient {
 
 	static
 	{
@@ -98,9 +98,9 @@ public class ClientSimpleApplication {
     }
 
 	public static void main(String[] args) throws IOException {
-        ConfigurableApplicationContext context = SpringApplication.run(ClientSimpleApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(SSLClient.class, args);
 
-        ClientSimpleApplication app = context.getBean(ClientSimpleApplication.class);
+        SSLClient app = context.getBean(SSLClient.class);
 
         HttpURLConnection connection = app.getHttpsURLConnection();
         System.out.println(connection.toString());

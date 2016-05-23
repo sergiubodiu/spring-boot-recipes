@@ -8,8 +8,8 @@ http:
       key-store-password: s3cr3t
       key-password: s3cr3t
       key-store-type: JKS
-      trust-store: classpath:server.p12
-      trust-store-type: PKCS12
+      trust-store: classpath:client.jks
+      trust-store-type: JKS
       trust-store-password: s3cr3t
 
 hello:
