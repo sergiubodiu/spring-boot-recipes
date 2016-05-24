@@ -1,4 +1,5 @@
 server:
+  port: 8080
   ssl:
     key-store: 'classpath:server.jks'
     key-store-password: s3cr3t

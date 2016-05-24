@@ -1,10 +1,10 @@
 # Generate server and client keystore
     
     keytool -genkeypair -keystore server.jks -storepass s3cr3t -alias server -keypass s3cr3t \
-        -dname "CN=Client,OU=Spring team,O=Pivotal,L=Singapore,S=Singapore,C=SG"
+        -dname "CN=*.local.pcfdev.io,OU=Spring team,O=Pivotal,L=Singapore,S=Singapore,C=SG" -ext SAN=dns:localhost
         
     keytool -genkeypair -keystore client.jks -storepass s3cr3t -alias client -keypass s3cr3t \
-        -dname "CN=Client,OU=Spring team,O=Pivotal,L=Singapore,S=Singapore,C=SG"
+         -dname "CN=*.local.pcfdev.io,OU=Spring team,O=Pivotal,L=Singapore,S=Singapore,C=SG" -ext SAN=dns:localhost
 
 ## List contents of a keystore
 
@@ -16,7 +16,7 @@
     Your keystore contains 1 entry
     
     server, May 24, 2016, PrivateKeyEntry,
-    Certificate fingerprint (SHA1): 6E:A7:78:23:34:78:0F:36:C5:DC:BC:E3:7B:29:C5:44:C8:ED:64:B8
+    Certificate fingerprint (SHA1): 21:DF:AF:DC:B0:65:79:06:22:76:56:73:FB:0B:9C:15:5E:50:79:61
     
     $ keytool -list -keystore client.jks -storepass s3cr3t
 
@@ -25,18 +25,20 @@
     
     Your keystore contains 1 entry
     
-    server, May 24, 2016, PrivateKeyEntry,
-    Certificate fingerprint (SHA1): 6E:A7:78:23:34:78:0F:36:C5:DC:BC:E3:7B:29:C5:44:C8:ED:64:B8
+    client, May 24, 2016, PrivateKeyEntry,
+    Certificate fingerprint (SHA1): 10:26:C7:05:98:D9:80:E1:F9:3D:41:96:C9:E9:F2:0E:6C:5D:3C:A3
 
 
 ## Import Client PKCS12 trust store
 
     keytool -importkeystore -srckeystore client.jks -srcstoretype JKS -deststoretype PKCS12 -destkeypass s3cr3t -deststorepass s3cr3t -destkeystore client.p12
 
+    keytool -importkeystore -srckeystore server.jks -srcstoretype JKS -deststoretype PKCS12 -destkeypass s3cr3t -deststorepass s3cr3t -destkeystore server.p12
+
 Move the server certificates
     
-    mv server.jks src/main/resources/
-    mv client.p12 src/main/resources/
+    mv server.jks client.p12 src/main/resources/
+    mv client.jks server.p12 ../client/src/main/resources/
     
 Update the src/main/resources/application.yml
 
@@ -51,20 +53,13 @@ Update the src/main/resources/application.yml
         trust-store-type: PKCS12
         client-auth: "need"
 
-## Import Server PKCS12 trust store
-    
-    keytool -importkeystore -srckeystore server.jks -srcstoretype JKS -deststoretype PKCS12 -destkeypass s3cr3t -deststorepass s3cr3t -destkeystore server.p12
+## See client configuration [Client](../client/README.md) 
 
- Move the client certificates
-     
-     mv client.jks ../client/src/main/resources/
-     mv server.p12 ../client/src/main/resources/
-     
-
-## Export Server PEM    
+         
+Export Server PEM (Optional)   
     
     keytool -exportcert -rfc -keystore server.jks -storepass s3cr3t -alias server > server.pem
     
-## If you need to delete a certificate
+If you need to delete a certificate
 
     keytool -delete -alias clientcert -keystore server.jks -storepass s3cr3t

@@ -1,13 +1,8 @@
 # Simple Java Client
 
-    keytool -genkeypair -keystore client.jks -storepass s3cr3t -alias client -keypass s3cr3t \
-        -keyalg RSA -dname "CN=Client,OU=Spring team,O=Pivotal,L=Singapore,S=Singapore,C=SG"
+    keytool -exportcert -alias server -file server-public.cer -keystore server.jks -storepass s3cr3t
     
-    keytool -importkeystore -srckeystore server.jks -srcstoretype JKS -deststoretype PKCS12 -destkeypass s3cr3t -deststorepass s3cr3t -destkeystore server.p12
-
-    keytool -exportcert -alias client -file client-public.cer -keystore client.jks -storepass s3cr3t
-    
-    keytool -importcert -keystore server.jks -alias clientcert -file client-public.cer -storepass s3cr3t -noprompt
+    keytool -importcert -keystore client.jks -alias servercert -file server-public.cer -storepass s3cr3t -noprompt
     
 
 ## Test SSL connectivity
@@ -65,3 +60,12 @@ Host vagrant
     Port 2222
     IdentityFile /home/user_name/.vagrant.d/insecure_private_key
 and the simplescp file vagrant:/path/. You can find path to identity file using the vagrant ssh-config command. 
+
+keytool -exportcert -alias spring-boot-ssl-sample -file client-public.cer -keystore sample.jks -storepass secret
+
+ mvn clean package
+ cf push server -p target/server-0.0.1-SNAPSHOT.jar -b java_buildpack
+ 
+ scp target/client-simple-0.0.1-SNAPSHOT.jar vagrant:.
+ 
+ java -Dhello.server=https://10.254.2.15:60002 -jar client-simple-0.0.1-SNAPSHOT.jar

@@ -1,0 +1,7 @@
+server:
+  ssl:
+    key-store: 'classpath:server.jks'
+    key-store-password: s3cr3t
+    key-store-type: JKS
+    key-password: s3cr3t
+    client-auth: want
