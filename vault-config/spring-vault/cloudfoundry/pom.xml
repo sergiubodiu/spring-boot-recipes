@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.vault.examples</groupId>
+		<artifactId>spring-vault-examples</artifactId>
+		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+
+	<artifactId>spring-vault-cloudfoundry-example</artifactId>
+
+	<name>Spring Vault on CloudFoundry</name>
+	<description>Demo project using Spring Vault on CloudFoundry requiring HashiCorp Vault
+		service broker
+	</description>
+
+	<properties>
+		<spring-cloud-vault-spring-connector.version>2.0.0.M1</spring-cloud-vault-spring-connector.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.vault</groupId>
+			<artifactId>spring-vault-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+
+		<!-- Required -->
+
+		<dependency>
+			<groupId>io.pivotal.spring.cloud</groupId>
+			<artifactId>spring-cloud-vault-spring-connector</artifactId>
+			<version>${spring-cloud-vault-spring-connector.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.pivotal.spring.cloud</groupId>
+			<artifactId>spring-cloud-vault-cloudfoundry-connector</artifactId>
+			<version>${spring-cloud-vault-spring-connector.version}</version>
+		</dependency>
+
+		<!-- Required only for local testing -->
+
+		<dependency>
+			<groupId>io.pivotal.spring.cloud</groupId>
+			<artifactId>spring-cloud-vault-localconfig-connector</artifactId>
+			<version>${spring-cloud-vault-spring-connector.version}</version>
+		</dependency>
+
+	</dependencies>
+
+</project>

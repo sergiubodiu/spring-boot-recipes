@@ -1,0 +1,88 @@
+image:https://build.spring.io/plugins/servlet/wittified/build-status/CLOUD-SCCFSB["Bamboo", link="https://build.spring.io/browse/CLOUD-SCCFSB"]
+image:https://circleci.com/gh/spring-cloud/spring-cloud-open-service-broker.svg?style=svg["CircleCI", link="https://circleci.com/gh/spring-cloud/spring-cloud-open-service-broker"]
+image:https://api.codacy.com/project/badge/Grade/6fb04712acd14a898ecf504d545d1400["Codacy code quality", link="https://www.codacy.com/app/scottfrederick/spring-cloud-cloudfoundry-service-broker?utm_source=github.com&utm_medium=referral&utm_content=spring-cloud/spring-cloud-cloudfoundry-service-broker&utm_campaign=Badge_Grade"]
+image:https://codecov.io/gh/spring-cloud/spring-cloud-open-service-broker/branch/master/graph/badge.svg["Codecov", link="https://codecov.io/gh/spring-cloud/spring-cloud-open-service-broker/branch/master"]
+
+= Overview
+
+Spring Cloud Open Service Broker is a framework for building https://projects.spring.io/spring-boot/[Spring Boot] applications that implement the https://www.openservicebrokerapi.org/[Open Service Broker API].
+
+[NOTE]
+This project was formerly named Spring Cloud - Cloud Foundry Service Broker. View the https://github.com/spring-cloud/spring-cloud-open-service-broker/tree/1.0.x[1.0.x] branch of this repository for information on using the released versions of the project with artifacts using that name. The `master` branch of the repository is currently in active development leading to a `2.0.0` release. 
+
+== Compatibility
+
+* https://projects.spring.io/spring-framework/[Spring Framework] 5.x
+* https://projects.spring.io/spring-boot/[Spring Boot] 2.x
+* https://github.com/openservicebrokerapi/servicebroker/[Open Service Broker API] 2.13
+
+== Getting Started
+
+See the https://cloud.spring.io/spring-cloud-open-service-broker/[project site] and https://docs.spring.io/spring-cloud-open-service-broker/docs/current/reference/html5/[reference documentation] to get started building a service broker using this framework.
+
+See the https://github.com/spring-cloud/spring-cloud-open-service-broker/wiki/2.0-Migration-Guide[migration guide] if you are migrating a project from `Spring Cloud - Cloud Foundry Service Broker` 1.x to `Spring Cloud Open Service Broker` 2.x.
+
+== Build
+
+This project requires Java 8 at a minimum. 
+
+The project is built with Gradle. The https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle wrapper] allows you to build the project on multiple platforms and even if you do not have Gradle installed; run it in place of the `gradle` command (as `./gradlew`) from the root of the main project directory.
+
+=== To compile the project and run tests
+
+    ./gradlew build
+
+== Working with the code
+If you don't have an IDE preference we would recommend that you use
+https://spring.io/tools[Spring Tool Suite] or
+http://eclipse.org[Eclipse] when working with the code. We use the
+http://eclipse.org/m2e/[m2eclipse] eclipse plugin for maven support. Other IDEs and tools
+should also work without issue as long as they use Maven 3.3.3 or better.
+
+== Contributing
+
+Spring Cloud is released under the non-restrictive Apache 2.0 license,
+and follows a very standard Github development process, using Github
+tracker for issues and merging pull requests into master. If you want
+to contribute even something trivial please do not hesitate, but
+follow the guidelines below.
+
+=== Sign the Contributor License Agreement
+Before we accept a non-trivial patch or pull request we will need you to sign the
+https://cla.pivotal.io/sign/spring[Contributor License Agreement].
+Signing the contributor's agreement does not grant anyone commit rights to the main
+repository, but it does mean that we can accept your contributions, and you will get an
+author credit if we do.  Active contributors might be asked to join the core team, and
+given the ability to merge pull requests.
+
+=== Code of Conduct
+This project adheres to the Contributor Covenant link:/CODE_OF_CONDUCT.adoc[code of
+conduct]. By participating, you  are expected to uphold this code. Please report
+unacceptable behavior to spring-code-of-conduct@pivotal.io.
+
+=== Code Conventions and Housekeeping
+None of these is essential for a pull request, but they will all help.  They can also be
+added after the original pull request but before a merge.
+
+* Use the Spring Framework code format conventions. If you use Eclipse
+  you can import formatter settings using the
+  `eclipse-code-formatter.xml` file from the
+  https://raw.githubusercontent.com/spring-cloud/spring-cloud-build/master/spring-cloud-dependencies-parent/eclipse-code-formatter.xml[Spring
+  Cloud Build] project. If using IntelliJ, you can use the
+  http://plugins.jetbrains.com/plugin/6546[Eclipse Code Formatter
+  Plugin] to import the same file.
+* Make sure all new `.java` files to have a simple Javadoc class comment with at least an
+  `@author` tag identifying you, and preferably at least a paragraph on what the class is
+  for.
+* Add the ASF license header comment to all new `.java` files (copy from existing files
+  in the project)
+* Add yourself as an `@author` to the .java files that you modify substantially (more
+  than cosmetic changes).
+* Add some Javadocs and, if you change the namespace, some XSD doc elements.
+* A few unit tests would help a lot as well -- someone has to do it.
+* If no-one else is using your branch, please rebase it against the current master (or
+  other target branch in the main project).
+* When writing a commit message please follow http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
+  if you are fixing an existing issue please add `Fixes gh-XXXX` at the end of the commit
+  message (where XXXX is the issue number).
+

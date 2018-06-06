@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: admin
+  profiles:
+    active:
+      - secure
+
+eureka:   #<1>
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    health-check-url-path: /actuator/health
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/
+
+mongodb:
+  host: localhost
+  port: 27017
+  username: admin
+  password: password
