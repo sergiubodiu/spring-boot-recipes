@@ -1,0 +1,27 @@
+plugins {
+    id 'groovy'
+    id 'org.springframework.boot' version '2.0.2.RELEASE'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    // Groovy
+    compile 'org.codehaus.groovy:groovy-all:2.4.7'
+
+    // Spring
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-jetty'
+    runtime 'org.springframework.boot:spring-boot-devtools'
+
+    // Spock
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4'
+    testRuntime 'cglib:cglib-nodep:3.2.4'
+}
